@@ -4,7 +4,13 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 import sqlglot
+"""
+Think about each feature of the intelligent query router 
+and define data structures that will help manage and represent the core concepts.
 
+1. Backend Enumeration: Define an enumeration for the different backends (DuckDB, Spark, Polars).
+2. Table Statistics: Create a data class to hold statistics about tables, including row counts, sizes, and partitioning info.
+"""
 
 class Backend(Enum):
     """Available execution backends."""
