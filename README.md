@@ -162,6 +162,97 @@ irouter benchmark
 
 ---
 
+## 📦 Installation
+```bash
+# Clone repository
+git clone https://github.com/yourusername/intelligent-query-router.git
+cd intelligent-query-router
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -e .
+
+# Generate test data
+python scripts/generate_test_data.py
+
+# Test installation
+irouter --help
+```
+
+---
+
+## 🎯 Quick Start
+```python
+from irouter.engine import QueryEngine
+
+# Create engine
+engine = QueryEngine(data_path="./data")
+
+# Execute query (automatic optimization)
+result = engine.execute("""
+    SELECT region, SUM(amount) as total
+    FROM sales
+    WHERE date >= '2024-11-01' AND date <= '2024-11-07'
+    GROUP BY region
+    ORDER BY total DESC
+""")
+
+print(f"Backend: {result.backend_used.value}")
+print(f"Time: {result.execution_time_sec:.3f}s")
+print(f"Rows: {result.rows_processed}")
+print(result.data)
+```
+
+**CLI Usage**:
+```bash
+# Execute query
+irouter execute "SELECT * FROM sales WHERE date = '2024-11-01'"
+
+# Explain query plan
+irouter explain "SELECT region, SUM(amount) FROM sales GROUP BY region"
+
+# View cache stats
+irouter cache-stats
+
+# Benchmark backends
+irouter benchmark
+```
+
+---
+
+## 📈 Benchmarks
+
+All benchmarks run on:
+- **CPU**: Intel i7-11800H (8 cores)
+- **RAM**: 32 GB
+- **Storage**: NVMe SSD
+- **Data**: 30 days × 1000 rows = 30K rows (~1 MB)
+
+| Operation | Time | Details |
+|-----------|------|---------|
+| SQL Parsing | 1-5ms | SQLGlot AST generation |
+| Query Optimization | 2-8ms | 200+ optimization rules |
+| Partition Pruning | < 10ms | 30 partitions → 1-7 scanned |
+| Feature Extraction | < 1ms | Count joins, aggs, etc. |
+| Cost Estimation | < 1ms | Estimate 3 backends |
+| Cache Lookup | < 0.1ms | Hash-based LRU cache |
+| DuckDB Execution | 15-125ms | Single-threaded OLAP |
+| Polars Execution | 28-189ms | Multi-threaded parallel |
+| Spark Execution | 1.8-2.4s | Distributed with overhead |
+| End-to-End (no cache) | 50-150ms | Full pipeline |
+| End-to-End (cached) | < 1ms | 100-1000x speedup |
+
+**Scalability** (extrapolated):
+- 1 GB data: DuckDB optimal (~5s)
+- 50 GB data: Polars optimal (~25s)
+- 500 GB data: Spark optimal (~40s distributed)
+
+---
+
+
 ## 📊 End-to-End Performance
 
 **Test Query**: Date-filtered aggregation (7 days of data)
@@ -526,95 +617,6 @@ cache_key = hash(canonical)
 
 ---
 
-## 📦 Installation
-```bash
-# Clone repository
-git clone https://github.com/yourusername/intelligent-query-router.git
-cd intelligent-query-router
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -e .
-
-# Generate test data
-python scripts/generate_test_data.py
-
-# Test installation
-irouter --help
-```
-
----
-
-## 🎯 Quick Start
-```python
-from irouter.engine import QueryEngine
-
-# Create engine
-engine = QueryEngine(data_path="./data")
-
-# Execute query (automatic optimization)
-result = engine.execute("""
-    SELECT region, SUM(amount) as total
-    FROM sales
-    WHERE date >= '2024-11-01' AND date <= '2024-11-07'
-    GROUP BY region
-    ORDER BY total DESC
-""")
-
-print(f"Backend: {result.backend_used.value}")
-print(f"Time: {result.execution_time_sec:.3f}s")
-print(f"Rows: {result.rows_processed}")
-print(result.data)
-```
-
-**CLI Usage**:
-```bash
-# Execute query
-irouter execute "SELECT * FROM sales WHERE date = '2024-11-01'"
-
-# Explain query plan
-irouter explain "SELECT region, SUM(amount) FROM sales GROUP BY region"
-
-# View cache stats
-irouter cache-stats
-
-# Benchmark backends
-irouter benchmark
-```
-
----
-
-## 📈 Benchmarks
-
-All benchmarks run on:
-- **CPU**: Intel i7-11800H (8 cores)
-- **RAM**: 32 GB
-- **Storage**: NVMe SSD
-- **Data**: 30 days × 1000 rows = 30K rows (~1 MB)
-
-| Operation | Time | Details |
-|-----------|------|---------|
-| SQL Parsing | 1-5ms | SQLGlot AST generation |
-| Query Optimization | 2-8ms | 200+ optimization rules |
-| Partition Pruning | < 10ms | 30 partitions → 1-7 scanned |
-| Feature Extraction | < 1ms | Count joins, aggs, etc. |
-| Cost Estimation | < 1ms | Estimate 3 backends |
-| Cache Lookup | < 0.1ms | Hash-based LRU cache |
-| DuckDB Execution | 15-125ms | Single-threaded OLAP |
-| Polars Execution | 28-189ms | Multi-threaded parallel |
-| Spark Execution | 1.8-2.4s | Distributed with overhead |
-| End-to-End (no cache) | 50-150ms | Full pipeline |
-| End-to-End (cached) | < 1ms | 100-1000x speedup |
-
-**Scalability** (extrapolated):
-- 1 GB data: DuckDB optimal (~5s)
-- 50 GB data: Polars optimal (~25s)
-- 500 GB data: Spark optimal (~40s distributed)
-
----
 
 ## 🤝 Contributing
 
