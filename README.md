@@ -33,13 +33,52 @@ source venv/bin/activate
 # Install
 pip install -e .
 ```
-## Setup (For devs)
-1. Think/research about partition pruning (what data types are input and output, intermediate states, what data structures are need for sqlglot modules, (parser, optimizer etc.))
-2. Same for query caching
+## Project Status
 
-- Create basic type definitions for backend sanititation
-- Create test suite for each module and integration testing
-- Cli dev
+### ✅ Implemented Modules
+
+| Module | Location | Description |
+|--------|----------|-------------|
+| **Core Types** | `src/irouter/core/types.py` | All data structures: Backend enum, Predicate, PartitionInfo, PruningResult, CostEstimate, QueryResult |
+| **SQL Parser** | `src/irouter/sqlglot/parser.py` | Parses SQL, optimizes with SQLGlot rules, extracts predicates from WHERE clauses |
+| **Partition Pruner** | `src/irouter/optimizer/partition_pruning.py` | Discovers Hive-style partitions, filters based on predicates, returns pruned file list |
+| **Cost Estimator** | `src/irouter/selector/cost_estimator.py` | Estimates scan/compute/overhead costs per backend using simple heuristics |
+| **Backend Selector** | `src/irouter/selector/backend_selector.py` | Picks optimal backend (DuckDB/Polars/Spark) based on minimum estimated cost |
+
+### 🚧 In Progress
+
+| Module | Location | Description |
+|--------|----------|-------------|
+| **DuckDB Backend** | `src/irouter/backends/duckdb_backend.py` | Execute SQL queries on DuckDB using pruned partition file list |
+| **Query Engine** | `src/irouter/engine.py` | Main orchestrator: parse → prune → select → execute → return QueryResult |
+| **Feature Extractor** | `src/irouter/sqlglot/feature_extractor.py` | Extract num_joins, num_aggregations, has_distinct from SQL AST for cost estimation |
+
+### 📋 Full Baseline Requirements
+
+**Must Implement:**
+- [ ] Base backend interface (`src/irouter/backends/base.py`)
+- [ ] DuckDB backend with partition filtering
+- [ ] Query engine orchestration layer
+- [ ] SQL feature extraction from AST
+- [ ] End-to-end integration test
+
+**Must Test:**
+- [ ] Full query execution (parse → prune → select → execute)
+- [ ] Cost estimates roughly match reality
+- [ ] Partition pruning actually filters files
+- [ ] Backend selection logic
+
+**Estimated Time:** 4-6 hours for working end-to-end baseline
+
+### 📅 Development Roadmap
+
+- **Day 1:** Project setup ✅
+- **Day 2:** Partition pruning ✅
+- **Day 3:** Backend selection ✅
+- **Day 4:** Query execution 🚧
+- **Day 5:** Query caching 📅
+- **Day 6:** CLI polish 📅
+- **Day 7:** Testing & docs 📅
 
 
 ## Usage
