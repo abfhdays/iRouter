@@ -20,6 +20,7 @@ build/
 # Data
 data/*.parquet
 data/*.csv
+data
 *.db
 
 # Testing
