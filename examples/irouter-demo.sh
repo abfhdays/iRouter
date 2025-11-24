@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# In your shell script, add before running Python:
+export HADOOP_HOME=/dev/null
+
+
 # iRouter Demo Script for asciinema
 # This script demonstrates the key features of the Intelligent SQL Query Router
 
